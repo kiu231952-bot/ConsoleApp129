@@ -22,9 +22,6 @@ namespace ConsoleApp129
                 // Рисуем текущее состояние карты
                 map.Drawing_the_map();
 
-                Console.WriteLine();
-                Console.WriteLine("Управление: стрелки. Выход: Esc");
-
                 // Ждём нажатия клавиши
                 ConsoleKey key = Console.ReadKey(true).Key;
 
