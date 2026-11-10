@@ -15,7 +15,7 @@ namespace ConsoleApp129
         {
             pointX = X; pointY = Y; 
         }
-        public override char Rendering_on_the_map()
+        public override char Rendering_on_the_map()   /// Базовая отрисовка персонажа.
         {
             return '☺';
         }

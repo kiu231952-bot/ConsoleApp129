@@ -12,7 +12,7 @@ namespace ConsoleApp129
         MapObject[,] map = new MapObject[25, 25];
 
        
-        public void Map_generation()
+        public void Map_generation() /// Генерирует карту 25x25, заполняя её стенами, деревьями, врагами и героем.
         {
             for (int i = 0; i < map.GetLength(0); i++)
             {
@@ -42,7 +42,8 @@ namespace ConsoleApp129
             }
         }
        
-        public void Drawing_the_map()
+        public void Drawing_the_map() /// Выводит карту в консоль с цветами.
+
         {
             for (int i = 0; i < map.GetLength(0); i++)
             {
@@ -54,82 +55,74 @@ namespace ConsoleApp129
                 Console.WriteLine();
             }
         }
-        
-        public void MovePersons()
+
+        public void MovePersons() /// Двигает героя в зависимости от нажатой клавиши.
         {
-                
-                MapObject[,] newMap = new MapObject[map.GetLength(0), map.GetLength(1)];
+            MapObject[,] newMap = new MapObject[map.GetLength(0), map.GetLength(1)];
+            Array.Copy(map, newMap, map.Length);
 
-                
-                Array.Copy(map, newMap, map.Length);
-
-                
-                for (int i = 0; i < map.GetLength(0); i++)
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int j = 0; j < map.GetLength(1); j++)
                 {
-                    for (int j = 0; j < map.GetLength(1); j++)
+                    if (map[i, j] is Enemy)
                     {
-                        if (map[i, j] is Enemy)
+                        int direction = rand.Next(4);
+                        int newX = i, newY = j;
+
+                        switch (direction)
                         {
-                            
-                            int direction = rand.Next(4); 
+                            case 0: newX = (i - 1 + map.GetLength(0)) % map.GetLength(0); break;
+                            case 1: newX = (i + 1) % map.GetLength(0); break;
+                            case 2: newY = (j - 1 + map.GetLength(1)) % map.GetLength(1); break;
+                            case 3: newY = (j + 1) % map.GetLength(1); break;
+                        }
 
-                            
-                            int newX = i, newY = j;
-                            switch (direction)
-                            {
-                                case 0:
-                                    newX = (i - 1 + map.GetLength(0)) % map.GetLength(0);
-                                    break;
-                                case 1:
-                                    newX = (i + 1) % map.GetLength(0);
-                                    break;
-                                case 2:
-                                    newY = (j - 1 + map.GetLength(1)) % map.GetLength(1);
-                                    break;
-                                case 3: 
-                                    newY = (j + 1) % map.GetLength(1);
-                                    break;
-                            }
-
-                            
-                            if (newMap[newX, newY] is Field)
-                            {
-                                newMap[newX, newY] = map[i, j];
-                                newMap[i, j] = new Field();
-                            }
+                        // Враг ходит на Field, ИЛИ НА ГЕРОЯ (чтобы убить его)
+                        if (newMap[newX, newY] is Field)
+                        {
+                            newMap[newX, newY] = map[i, j];
+                            newMap[i, j] = new Field();
+                        }
+                        else if (newMap[newX, newY] is Hero)
+                        {
+                            // Враг встает на место героя и УБИВАЕТ его
+                            // В массиве герой просто затирается врагом. 
+                            newMap[newX, newY] = map[i, j];
+                            newMap[i, j] = new Field();
                         }
                     }
                 }
-                
-                Array.Copy(newMap, map, map.Length);
+            }
+            Array.Copy(newMap, map, map.Length);
         }
-        
-        public void MovePersons(ConsoleKey key)
+
+        public void MovePersons(ConsoleKey key) /// Случайно двигает всех врагов на карте.
         {
-            
+
             MapObject[,] newMap = new MapObject[map.GetLength(0), map.GetLength(1)];
 
-            
+
             Array.Copy(map, newMap, map.Length);
 
-            
+
             for (int i = 0; i < map.GetLength(0); i++)
             {
                 for (int j = 0; j < map.GetLength(1); j++)
                 {
                     if (map[i, j] is Hero)
                     {
-                        
+
                         int newX = i, newY = j;
                         switch (key)
                         {
-                            case ConsoleKey.UpArrow: 
+                            case ConsoleKey.UpArrow:
                                 newX = (i - 1 + map.GetLength(0)) % map.GetLength(0);
                                 break;
-                            case ConsoleKey.DownArrow: 
+                            case ConsoleKey.DownArrow:
                                 newX = (i + 1) % map.GetLength(0);
                                 break;
-                            case ConsoleKey.LeftArrow: 
+                            case ConsoleKey.LeftArrow:
                                 newY = (j - 1 + map.GetLength(1)) % map.GetLength(1);
                                 break;
                             case ConsoleKey.RightArrow:
@@ -137,7 +130,7 @@ namespace ConsoleApp129
                                 break;
                         }
 
-                        
+
                         if (newMap[newX, newY] is Field)
                         {
                             newMap[newX, newY] = map[i, j];
@@ -147,8 +140,22 @@ namespace ConsoleApp129
                 }
             }
 
-            
+
             Array.Copy(newMap, map, map.Length);
+
+        }
+
+
+        public bool IsHeroAlive()
+        {
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int j = 0; j < map.GetLength(1); j++)
+                {
+                    if (map[i, j] is Hero) return true;
+                }
+            }
+            return false;
         }
     }
 }

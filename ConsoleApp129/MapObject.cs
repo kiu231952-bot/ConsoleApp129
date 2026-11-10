@@ -9,6 +9,7 @@ namespace ConsoleApp129
     internal abstract class MapObject
     {
         public abstract char Rendering_on_the_map();
+        /// Возвращает символ для отрисовки объекта на карте.
     }
 
     internal class Wall : MapObject
