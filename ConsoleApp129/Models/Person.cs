@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp129
+namespace ConsoleApp129.Models
 {
     internal class Person : MapObject
     {
         int pointX;
         int pointY;
+
 
         public Person(int X,int Y)
         {
@@ -27,9 +28,11 @@ namespace ConsoleApp129
         {
 
         }
+        public static ConsoleColor HeroColor { get; set; } = ConsoleColor.Yellow;
+
         public override char Rendering_on_the_map()
         {
-            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.ForegroundColor = HeroColor;
             return '☻';
         }
     }

@@ -20,3 +20,6 @@ C:\Users\stud-418\Desktop\prac\pract\ConsoleApp129\obj\Debug\ConsoleApp129.cspro
 C:\Users\stud-418\Desktop\prac\pract\ConsoleApp129\obj\Debug\ConsoleApp129.csproj.CoreCompileInputs.cache
 C:\Users\stud-418\Desktop\prac\pract\ConsoleApp129\obj\Debug\ConsoleApp129.exe
 C:\Users\stud-418\Desktop\prac\pract\ConsoleApp129\obj\Debug\ConsoleApp129.pdb
+C:\Users\stud-418\Desktop\prac\pract\ConsoleApp129\bin\Debug\Newtonsoft.Json.dll
+C:\Users\stud-418\Desktop\prac\pract\ConsoleApp129\bin\Debug\Newtonsoft.Json.xml
+C:\Users\stud-418\Desktop\prac\pract\ConsoleApp129\obj\Debug\ConsoleA.A53ABBB8.Up2Date

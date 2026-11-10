@@ -1,17 +1,37 @@
-﻿using System;
+﻿using ConsoleApp129.Data;
+using ConsoleApp129.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp129
+namespace ConsoleApp129.Logic
 {
     internal class Map
     {
         Random rand = new Random();
         MapObject[,] map = new MapObject[25, 25];
 
-       
+        public MapObject[,] GetMap()
+        {
+            return map;
+        }
+
+        public void RestoreFromState(GameState state)
+        {
+            for (int i = 0; i < map.GetLength(0); i++)
+                for (int j = 0; j < map.GetLength(1); j++)
+                    map[i, j] = new Field();
+
+            foreach (var wall in state.Walls) map[wall.X, wall.Y] = new Wall();
+            foreach (var tree in state.Trees) map[tree.X, tree.Y] = new Tree();
+            foreach (var enemy in state.Enemies) map[enemy.X, enemy.Y] = new Enemy(enemy.X, enemy.Y);
+
+            map[state.HeroX, state.HeroY] = new Hero(state.HeroX, state.HeroY);
+        }
+
+
         public void Map_generation() /// Генерирует карту 25x25, заполняя её стенами, деревьями, врагами и героем.
         {
             for (int i = 0; i < map.GetLength(0); i++)
