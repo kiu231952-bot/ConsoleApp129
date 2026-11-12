@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using ConsoleApp129.Models;
 using ConsoleApp129.Logic;
 using ConsoleApp129.UI;
@@ -16,131 +17,123 @@ namespace ConsoleApp129
             while (true)
             {
                 int mainChoice = Menu.ShowMainMenu();
-                if (mainChoice == 3) break; // Выход
+                if (mainChoice == 3) break;
+                if (mainChoice == 4)
+                {
+                    Hero.HeroColor = Menu.showColorChoice();
+                    continue;
+                }
 
                 Map map = new Map();
-
-                if (mainChoice == 1)
-                {
-                    map.Map_generation();
-                }
+                if (mainChoice == 1) map.Map_generation();
                 else if (mainChoice == 2)
                 {
                     var loadedState = SaveManager.LoadGame();
                     if (loadedState == null)
                     {
-                        Console.WriteLine("\nСохранение не найдено! Нажмите любую клавишу...");
+                        Console.WriteLine("\nСохранение не найдено!");
                         Console.ReadKey(true);
                         continue;
                     }
                     map.RestoreFromState(loadedState);
                 }
-                else if (mainChoice == 4)
-                {
-                    Hero.HeroColor = Menu.showColorChoice();
-                    continue;
-                }
+
+                int level = 1;
                 bool isPlaying = true;
+                DateTime lastEnemyMove = DateTime.Now;
+                DateTime lastBulletMove = DateTime.Now;
+
+                Console.Clear();
+
                 while (isPlaying)
                 {
-                    Console.Clear();
+                    // Отрисовка без мерцания
+                    Console.SetCursorPosition(0, 0);
+                    Console.WriteLine($"=== УРОВЕНЬ {level} ===");
+
+                    Hero currentHero = null;
+                    for (int i = 0; i < map.GetMap().GetLength(0); i++)
+                        for (int j = 0; j < map.GetMap().GetLength(1); j++)
+                            if (map.GetMap()[i, j] is Hero h) currentHero = h;
+
+                    if (currentHero != null)
+                        Console.WriteLine($"Здоровье: {new string('♥', currentHero.Health)}    ");
+
                     map.Drawing_the_map();
-                    Console.WriteLine("\n[S] - быстрое сохранение | [L] - быстрая загрузка | [ESC] - Пауза");
+                    Console.WriteLine("\nСтрелки - ход | [Пробел] - стрельба | [ESC] - пауза            ");
 
-                    ConsoleKey key = Console.ReadKey(true).Key;
-
-                    if (key == ConsoleKey.L) // load ON L
+                    if ((DateTime.Now - lastEnemyMove).TotalSeconds >= 1)
                     {
-                        var loadedState = SaveManager.LoadGame();
-                        if (loadedState != null)
-                        {
-                            map.RestoreFromState(loadedState);
-                            Console.WriteLine("\n[ИГРА ЗАГРУЖЕНА!]");
-                              Console.ReadKey(true);
-                            continue;
-
-
-                        }
-                        else
-                        {
-                            Console.WriteLine("\n[СОХРАНЕНИЕ НЕ НАЙДЕНО!]");
-                        }
-                        continue;
+                        map.MovePersons();      // Враги ходят
+                        map.EnemyShoot();       // Враги создают пули
+                        lastEnemyMove = DateTime.Now;
                     }
 
-                    if (key == ConsoleKey.S)
+                    // --- ДВИЖЕНИЕ ПУЛЬ (раз в 0.3 секунды) ---
+                    if ((DateTime.Now - lastBulletMove).TotalMilliseconds >= 100)
                     {
-                        SaveManager.SaveGame(map);
-                        Console.WriteLine("\n[ИГРА СОХРАНЕНА!]");
-                        Console.ReadKey(true);
-                        continue;
+                        map.MoveBullets();      // Пули летят
+                        lastBulletMove = DateTime.Now;
                     }
-
-                    // ПАУЗА
-                    if (key == ConsoleKey.Escape)
-                    {
-                        int pauseChoice = Menu.ShowPauseMenu();
-                        if (pauseChoice == 1) continue; // продолжить
-                        if (pauseChoice == 2) { isPlaying = false; break; } // main menuu
-
-                        
-                        if (pauseChoice == 3)
-                        {
-                                SaveManager.SaveGame(map);
-                                Console.WriteLine("\n[ИГРА СОХРАНЕНА!]");
-                                continue;
-                        }
-                          //ЗАГРУЗКА ИЗ МЕНЮ ПАУЗЫ
-                        if (pauseChoice == 4)
-                        {
-                            var loadedState = SaveManager.LoadGame();
-                            if (loadedState != null)
-                            {
-                                map.RestoreFromState(loadedState);
-                                Console.WriteLine("\n[Игра загружена]");
-                                Console.ReadKey(true);
-                                continue;
-                            }
-                            else
-                            {
-                                Console.WriteLine("\n[СОХРАНЕНИЕ НЕ НАЙДЕНО!]");
-                            }
-                            Console.ReadKey(true);
-                            continue;
-                        }
-                    }
-
-                    // ХОДЫ
-                    if (key == ConsoleKey.UpArrow || key == ConsoleKey.DownArrow ||
-                        key == ConsoleKey.LeftArrow || key == ConsoleKey.RightArrow)
-                    {
-                        map.MovePersons(key);
-                        map.MovePersons();
-                    }
-
-                    // ПРОВЕРКА НА СМЕРТЬ
+                    // Проверка на смерть
                     if (!map.IsHeroAlive())
                     {
                         int deathChoice = Menu.ShowDeathMenu();
-                        if (deathChoice == 1) // загрузить ласт сохранение
+                        if (deathChoice == 1)
                         {
                             var loadedState = SaveManager.LoadGame();
-                            if (loadedState != null)
-                            {
-                                map.RestoreFromState(loadedState);
-                            }
-                            else
-                            {
-                                Console.WriteLine("\nСохранение не найдено! Начинаем заново...");
-                                Console.ReadKey(true);
-                                map.Map_generation();
-                            }
+                            if (loadedState != null) map.RestoreFromState(loadedState);
+                            else map.Map_generation();
+                            level = 1;
                         }
-                        else
+                        else isPlaying = false;
+
+                        Console.Clear();
+                        break;
+                    }
+
+                    // Проверка на корабль (переход на новый уровень)
+                    map.CheckLevelEnd();
+                    if (map.IsHeroOnShip())
+                    {
+                        level++;
+                        map.Map_generation();
+                        Console.Clear();
+                        break;
+                    }
+
+                    // Обработка нажатий
+                    if (Console.KeyAvailable)
+                    {
+                        ConsoleKey key = Console.ReadKey(true).Key;
+
+                        if (key == ConsoleKey.UpArrow || key == ConsoleKey.DownArrow ||
+                            key == ConsoleKey.LeftArrow || key == ConsoleKey.RightArrow)
                         {
-                            isPlaying = false;
+                            map.MovePersons(key);
+                        }
+                        else if (key == ConsoleKey.Spacebar)
+                        {
+                            map.Shoot();
+                        }
+                        else if (key == ConsoleKey.Escape)
+                        {
+                            Console.Clear();
+                            int pauseChoice = Menu.ShowPauseMenu();
+                            if (pauseChoice == 2) { isPlaying = false; break; }
+                            if (pauseChoice == 3) map.RestoreFromState(SaveManager.LoadGame());
+                            if (pauseChoice == 4) SaveManager.SaveGame(map);
+                            Console.Clear();
+                        }
+                        else if (key == ConsoleKey.S) SaveManager.SaveGame(map);
+                        else if (key == ConsoleKey.L)
+                        {
+                            var st = SaveManager.LoadGame();
+                            if (st != null) map.RestoreFromState(st);
                         }
                     }
+
+                    Thread.Sleep(10); // Задержка, чтобы не грузить процессор
                 }
             }
         }

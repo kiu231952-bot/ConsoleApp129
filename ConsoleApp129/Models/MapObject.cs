@@ -37,4 +37,13 @@ namespace ConsoleApp129.Models
             return 'T';
         }
     }
+
+    internal class Ship : MapObject
+    {
+        public override char Rendering_on_the_map()
+        {
+            return '⚓';
+        }
+    }
+
 }

@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Data\SaveManager.cs" />
     <Compile Include="Logic\Map.cs" />
+    <Compile Include="Models\Bullet.cs" />
     <Compile Include="Models\MapObject.cs" />
     <Compile Include="UI\Menu.cs" />
     <Compile Include="Models\Person.cs" />

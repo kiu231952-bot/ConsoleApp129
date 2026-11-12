@@ -46,7 +46,7 @@ namespace ConsoleApp129.Data
 
                 string json = JsonConvert.SerializeObject(state, Formatting.Indented);
 
-                // Сохраняем прямо в папку, где лежит твоя игра (bin\Debug)
+                // Сохраняем прямо в папку, где лежит игра (bin\Debug)
                 string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "savegame.json");
                 File.WriteAllText(path, json);
             }

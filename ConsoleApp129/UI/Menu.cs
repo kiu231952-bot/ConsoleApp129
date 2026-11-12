@@ -3,7 +3,6 @@ namespace ConsoleApp129.UI
 {
     public static class Menu
     {
-        // Главное меню
         public static int ShowMainMenu()
         {
             Console.Clear();
@@ -15,7 +14,7 @@ namespace ConsoleApp129.UI
             Console.WriteLine("\n1. Начать игру");
             Console.WriteLine("2. Загрузить игру");
             Console.WriteLine("3. Выход");
-            Console.WriteLine("4. Поменять скин");
+            Console.WriteLine("4. Поменять цвет");
             Console.Write("\nВыберите действие: ");
 
             while (true)
@@ -24,12 +23,10 @@ namespace ConsoleApp129.UI
                 if (key == ConsoleKey.D1 || key == ConsoleKey.NumPad1) return 1;
                 if (key == ConsoleKey.D2 || key == ConsoleKey.NumPad2) return 2;
                 if (key == ConsoleKey.D3 || key == ConsoleKey.NumPad3) return 3;
-                if (key == ConsoleKey.D4 || key == ConsoleKey.NumPad3) return 4;
-                if (key == ConsoleKey.D5 || key == ConsoleKey.NumPad5) return 5;
-
-
+                if (key == ConsoleKey.D4 || key == ConsoleKey.NumPad4) return 4; 
             }
         }
+
         public static ConsoleColor showColorChoice()
         {
             Console.Clear();
@@ -48,7 +45,6 @@ namespace ConsoleApp129.UI
             }
         }
 
-        // Меню паузы
         public static int ShowPauseMenu()
         {
             Console.Clear();
@@ -62,7 +58,6 @@ namespace ConsoleApp129.UI
             Console.WriteLine("3. Загрузиться");
             Console.WriteLine("4. Сохраниться");
 
-
             Console.Write("\nВыберите действие: ");
 
             while (true)
@@ -72,12 +67,9 @@ namespace ConsoleApp129.UI
                 if (key == ConsoleKey.D2 || key == ConsoleKey.NumPad2) return 2;
                 if (key == ConsoleKey.D3 || key == ConsoleKey.NumPad3) return 3;
                 if (key == ConsoleKey.D4 || key == ConsoleKey.NumPad4) return 4;
-                if (key == ConsoleKey.D5 || key == ConsoleKey.NumPad4) return 5;
-
-
-
             }
         }
+
         public static int ShowDeathMenu()
         {
             Console.Clear();
@@ -98,4 +90,4 @@ namespace ConsoleApp129.UI
             }
         }
     }
-    }
+}
